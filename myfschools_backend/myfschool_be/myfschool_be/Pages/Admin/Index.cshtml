@@ -1,0 +1,85 @@
+@page
+@model myfschool_be.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Học sinh</div>
+        <div class="stat-value">@Model.StudentCount</div>
+        <div class="stat-icon">🎓</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Giáo viên</div>
+        <div class="stat-value">@Model.TeacherCount</div>
+        <div class="stat-icon">👨‍🏫</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Lớp học</div>
+        <div class="stat-value">@Model.ClassCount</div>
+        <div class="stat-icon">🏫</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Thời khoá biểu</div>
+        <div class="stat-value">@Model.ScheduleCount</div>
+        <div class="stat-icon">📅</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Câu lạc bộ</div>
+        <div class="stat-value">@Model.ClubCount</div>
+        <div class="stat-icon">⚽</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Sự kiện</div>
+        <div class="stat-value">@Model.EventCount</div>
+        <div class="stat-icon">🎉</div>
+    </div>
+</div>
+
+<!-- Bảng Users mới nhất -->
+<h3 style="margin-bottom:12px; color:#1a237e;">👥 Users mới nhất</h3>
+<table class="data-table" style="margin-bottom:28px;">
+    <thead>
+        <tr><th>ID</th><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Vai trò</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model.RecentUsers)
+        {
+            <tr>
+                <td>@u.Id</td>
+                <td>@u.FullName</td>
+                <td>@u.Email</td>
+                <td>@u.Phone</td>
+                <td>
+                    @foreach (var r in u.Roles)
+                    {
+                        <span class="badge badge-@r.Name">@r.Name</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Sự kiện sắp tới -->
+<h3 style="margin-bottom:12px; color:#1a237e;">🎉 Sự kiện sắp tới</h3>
+<table class="data-table">
+    <thead>
+        <tr><th>Tên</th><th>Ngày</th><th>Địa điểm</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model.UpcomingEvents)
+        {
+            <tr>
+                <td>@e.Title</td>
+                <td>@(e.StartAt.ToString("dd/MM/yyyy HH:mm"))</td>
+                <td>@e.Location</td>
+            </tr>
+        }
+        @if (!Model.UpcomingEvents.Any())
+        {
+            <tr><td colspan="3" style="text-align:center;color:#999;">Không có sự kiện nào sắp tới</td></tr>
+        }
+    </tbody>
+</table>

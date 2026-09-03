@@ -1,0 +1,89 @@
+@page
+@model myfschool_be.Pages.Admin.Schedules.ImportModel
+@{
+    ViewData["Title"] = "Import TKB từ Excel";
+}
+
+<!-- Hướng dẫn -->
+<div style="background:#fff;padding:20px 24px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.08);margin-bottom:24px;">
+    <h3 style="color:#1a237e;margin-bottom:12px;">📋 Hướng dẫn format Excel</h3>
+    <p style="font-size:13px;color:#666;margin-bottom:12px;">File Excel (.xlsx) cần có <strong>đúng 6 cột</strong> theo thứ tự:</p>
+    <table class="data-table" style="max-width:600px;">
+        <thead><tr><th>Cột</th><th>Tên</th><th>Ví dụ</th></tr></thead>
+        <tbody>
+            <tr><td>A</td><td>Lớp</td><td>10A1</td></tr>
+            <tr><td>B</td><td>Thứ (2-7)</td><td>2</td></tr>
+            <tr><td>C</td><td>Tiết (1-10)</td><td>1</td></tr>
+            <tr><td>D</td><td>Môn học</td><td>Toán</td></tr>
+            <tr><td>E</td><td>Giáo viên (họ tên)</td><td>Phạm Thị Hoa</td></tr>
+            <tr><td>F</td><td>Phòng</td><td>P.201</td></tr>
+        </tbody>
+    </table>
+    <p style="font-size:12px;color:#999;margin-top:8px;">Dòng 1 là header (bỏ qua), dữ liệu bắt đầu từ dòng 2.</p>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<!-- Upload Form -->
+@if (Model.PreviewRows == null || !Model.PreviewRows.Any())
+{
+    <form method="post" asp-page-handler="Upload" enctype="multipart/form-data">
+        <div class="upload-box" onclick="document.getElementById('fileInput').click();">
+            <div class="icon">📤</div>
+            <p>Click hoặc kéo file Excel (.xlsx) vào đây</p>
+            <input type="file" id="fileInput" name="file" accept=".xlsx" required style="display:none;"
+                   onchange="this.form.submit();" />
+        </div>
+    </form>
+}
+
+<!-- Preview -->
+@if (Model.PreviewRows != null && Model.PreviewRows.Any())
+{
+    <h3 style="color:#1a237e;margin-bottom:12px;">📋 Preview — @Model.PreviewRows.Count dòng</h3>
+    @if (Model.ErrorCount > 0)
+    {
+        <div class="alert alert-warning">⚠️ Có <strong>@Model.ErrorCount</strong> dòng lỗi (highlight đỏ). Chỉ các dòng hợp lệ (xanh) sẽ được import.</div>
+    }
+
+    <div class="preview-wrap">
+        <table class="data-table">
+            <thead>
+                <tr><th>#</th><th>Lớp</th><th>Thứ</th><th>Tiết</th><th>Môn</th><th>Giáo viên</th><th>Phòng</th><th>Trạng thái</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.PreviewRows)
+                {
+                    <tr class="@(row.IsValid ? "row-ok" : "row-error")">
+                        <td>@row.RowNumber</td>
+                        <td>@row.ClassName</td>
+                        <td>@row.DayOfWeek</td>
+                        <td>@row.PeriodNo</td>
+                        <td>@row.SubjectName</td>
+                        <td>@row.TeacherName</td>
+                        <td>@row.Room</td>
+                        <td>@(row.IsValid ? "✅" : $"❌ {row.Error}")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.ValidCount > 0)
+    {
+        <form method="post" asp-page-handler="Confirm">
+            <input type="hidden" name="fileName" value="@Model.TempFileName" />
+            <div style="display:flex;gap:12px;margin-top:16px;">
+                <button type="submit" class="btn btn-primary">✅ Import @Model.ValidCount dòng hợp lệ</button>
+                <a href="/Admin/Schedules/Import" class="btn btn-secondary">Huỷ</a>
+            </div>
+        </form>
+    }
+}

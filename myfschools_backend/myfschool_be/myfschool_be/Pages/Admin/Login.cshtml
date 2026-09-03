@@ -1,0 +1,40 @@
+@page
+@model myfschool_be.Pages.Admin.LoginModel
+@{
+    Layout = null; // Login page không dùng layout sidebar
+    ViewData["Title"] = "Admin Login";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login — FPT School</title>
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h2>🎓 FPT School</h2>
+            <p class="subtitle">Đăng nhập Admin Panel</p>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger">@Model.ErrorMessage</div>
+            }
+
+            <form method="post">
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" name="Phone" class="form-control" placeholder="Nhập SĐT admin" required />
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" name="Password" class="form-control" placeholder="Nhập mật khẩu" required />
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:12px;">Đăng nhập</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

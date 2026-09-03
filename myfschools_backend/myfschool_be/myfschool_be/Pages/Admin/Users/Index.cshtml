@@ -1,0 +1,98 @@
+@page
+@model myfschool_be.Pages.Admin.Users.IndexModel
+@{
+    ViewData["Title"] = "Quản lý Users";
+}
+
+<!-- Search + Filter -->
+<div class="search-bar">
+    <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <input type="text" name="search" value="@Model.Search" class="form-control" placeholder="🔍 Tìm theo tên, email, SĐT..." />
+        @{
+            var roles = new[] { ("admin", "Admin"), ("teacher", "Giáo viên"), ("student", "Học sinh") };
+        }
+        <select name="role" class="form-control" style="max-width:160px;">
+            <option value="">— Tất cả vai trò —</option>
+            @foreach (var (val, label) in roles)
+            {
+                if (Model.RoleFilter == val)
+                {
+                    @Html.Raw($"<option value=\"{val}\" selected>{label}</option>")
+                }
+                else
+                {
+                    @Html.Raw($"<option value=\"{val}\">{label}</option>")
+                }
+            }
+        </select>
+        <button type="submit" class="btn btn-primary">Lọc</button>
+        @if (!string.IsNullOrEmpty(Model.Search) || !string.IsNullOrEmpty(Model.RoleFilter))
+        {
+            <a href="/Admin/Users" class="btn btn-secondary">Xoá bộ lọc</a>
+        }
+    </form>
+</div>
+
+<p style="color:#888;font-size:13px;margin-bottom:12px;">Tổng: <strong>@Model.TotalCount</strong> users</p>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Họ tên</th>
+            <th>Email</th>
+            <th>SĐT</th>
+            <th>Vai trò</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model.Users)
+        {
+            <tr>
+                <td>@u.Id</td>
+                <td>@u.FullName</td>
+                <td>@u.Email</td>
+                <td>@u.Phone</td>
+                <td>
+                    @foreach (var r in u.Roles)
+                    {
+                        <span class="badge badge-@r.Name">@r.Name</span>
+                    }
+                </td>
+                <td>
+                    <span class="badge @(u.IsActive ? "badge-active" : "badge-inactive")">
+                        @(u.IsActive ? "Hoạt động" : "Bị khoá")
+                    </span>
+                </td>
+                <td>
+                    <a href="/Admin/Users/Edit?id=@u.Id" class="btn btn-sm btn-secondary">✏️ Sửa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+@if (Model.TotalPages > 1)
+{
+    <div class="pagination">
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            if (i == Model.CurrentPage)
+            {
+                <span class="active">@i</span>
+            }
+            else
+            {
+                <a href="/Admin/Users?page=@i&search=@Model.Search&role=@Model.RoleFilter">@i</a>
+            }
+        }
+    </div>
+}

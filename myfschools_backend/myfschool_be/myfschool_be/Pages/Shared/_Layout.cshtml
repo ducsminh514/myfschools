@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — FPT School Admin</title>
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            🎓 <span>FPT</span> School Admin
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/Admin" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Index" ? "active" : "")">
+                <span class="icon">📊</span> Dashboard
+            </a>
+            <a href="/Admin/Users" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Admin/Users") == true ? "active" : "")">
+                <span class="icon">👥</span> Quản lý Users
+            </a>
+            <a href="/Admin/Schedules" class="@(ViewContext.RouteData.Values["page"]?.ToString()?.StartsWith("/Admin/Schedules") == true ? "active" : "")">
+                <span class="icon">📅</span> Thời khoá biểu
+            </a>
+            <a href="/Admin/Schedules/Import" class="@(ViewContext.RouteData.Values["page"]?.ToString() == "/Admin/Schedules/Import" ? "active" : "")">
+                <span class="icon">📤</span> Import TKB Excel
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            © 2025 FPT School
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main-content">
+        <div class="topbar">
+            <h1>@ViewData["Title"]</h1>
+            <div class="admin-info">
+                <span>👤 @Context.Session.GetString("AdminName")</span>
+                <a href="/Admin/Logout" class="btn btn-sm btn-danger">Đăng xuất</a>
+            </div>
+        </div>
+        <div class="content-body">
+            @RenderBody()
+        </div>
+    </div>
+</body>
+</html>

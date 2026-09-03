@@ -1,0 +1,71 @@
+@page
+@model myfschool_be.Pages.Admin.Schedules.IndexModel
+@{
+    ViewData["Title"] = "Thời khoá biểu";
+}
+
+<div class="search-bar">
+    <form method="get" style="display:flex;gap:12px;align-items:center;">
+        <select name="classId" class="form-control" style="max-width:200px;">
+            <option value="">— Chọn lớp —</option>
+            @foreach (var c in Model.ClassList)
+            {
+                if (Model.SelectedClassId == c.Id)
+                {
+                    @Html.Raw($"<option value=\"{c.Id}\" selected>{c.Name}</option>")
+                }
+                else
+                {
+                    @Html.Raw($"<option value=\"{c.Id}\">{c.Name}</option>")
+                }
+            }
+        </select>
+        <button type="submit" class="btn btn-primary">Xem TKB</button>
+        <a href="/Admin/Schedules/Import" class="btn btn-success">📤 Import Excel</a>
+    </form>
+</div>
+
+@if (Model.SelectedClassId > 0 && Model.ScheduleGrid != null)
+{
+    <h3 style="margin-bottom:12px;color:#1a237e;">📅 TKB lớp @Model.SelectedClassName</h3>
+    <table class="schedule-grid">
+        <thead>
+            <tr>
+                <th>Tiết</th>
+                <th>Thứ 2</th><th>Thứ 3</th><th>Thứ 4</th><th>Thứ 5</th><th>Thứ 6</th><th>Thứ 7</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int period = 1; period <= 10; period++)
+            {
+                <tr>
+                    <td style="font-weight:600;background:#f5f5f5;">Tiết @period</td>
+                    @for (int day = 2; day <= 7; day++)
+                    {
+                        var key = $"{day}-{period}";
+                        var entry = Model.ScheduleGrid.ContainsKey(key) ? Model.ScheduleGrid[key] : null;
+                        if (entry != null)
+                        {
+                            <td class="has-class">
+                                <strong>@entry.SubjectName</strong><br/>
+                                <small style="color:#666;">@entry.TeacherName</small><br/>
+                                <small style="color:#999;">@entry.Room</small>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>—</td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (Model.SelectedClassId == 0)
+{
+    <div style="text-align:center;padding:60px;color:#999;">
+        <div style="font-size:48px;">📅</div>
+        <p>Chọn lớp để xem thời khoá biểu</p>
+    </div>
+}
